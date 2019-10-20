@@ -28,4 +28,4 @@ pgPool.query(sql)
 
 -----
 
-## `CError.meta`
+## `PGError.meta`
