@@ -1,6 +1,6 @@
 {
   "name": "@yo1dog/pg-error",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "PG Error",
   "main": "lib/PGError.js",
   "types": "lib/PGError.d.ts",
