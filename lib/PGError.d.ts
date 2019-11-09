@@ -35,6 +35,8 @@ declare class PGError extends Error {
       values?: any[]
     }
   }
+  
+  public origError: Error;
 }
 
 export = PGError;
