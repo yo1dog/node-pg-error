@@ -4,8 +4,7 @@ declare class PGError extends Error {
    */
   public constructor(
     pgError: Error,
-    message?: string,
-    sql?: {
+    sql?: string | {
       text?  : string,
       values?: any[]
     }
@@ -30,7 +29,7 @@ declare class PGError extends Error {
     file?            : string;
     line?            : string;
     routine?         : string;
-    sql?: {
+    sql: {
       text?  : string,
       values?: any[]
     }
