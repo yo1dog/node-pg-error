@@ -17,8 +17,11 @@ declare class PGError extends Error {
     severity?        : string;
     code?            : string;
     hint?            : string;
-    position?        : number;
-    internalPosition?: number;
+    queryLine        : number;
+    queryChar        : number;
+    queryIndex       : number;
+    position?        : string;
+    internalPosition?: string;
     internalQuery?   : string;
     where?           : string;
     schema?          : string;
