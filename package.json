@@ -1,6 +1,6 @@
 {
   "name": "@yo1dog/pg-error",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "PG Error",
   "main": "lib/PGError.js",
   "types": "lib/PGError.d.ts",
@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "npx tsc -p jsconfig.json && npx eslint ."
+    "lint": "npx tsc -p jsconfig.json --noEmit && npx eslint ."
   },
   "repository": {
     "type": "git",
