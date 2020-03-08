@@ -2,8 +2,14 @@ declare class PGError extends Error {
   public constructor(
     err: Error,
     query?: string | {
-      text?  : string | null,
-      values?: any[] | null
+      text?  : string | null;
+      values?: any[] | null;
+    },
+    config?: {
+      verbosityLevel?  : number;
+      showContextLevel?: number;
+      hideQuery?       : boolean;
+      hideQueryValues? : boolean;
     }
   );
   
@@ -25,8 +31,8 @@ declare class PGError extends Error {
   public routine?         : string;
   public length           : number;
   public query: {
-    text?  : string | null,
-    values?: any[] | null
+    text?  : string | null;
+    values?: any[] | null;
   }
   
   public origError: Error & {
