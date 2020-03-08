@@ -51,38 +51,46 @@ QUERY: {
  param                    | type             | description
 --------------------------|------------------|-------------
 `err`                     | Error            | Error from pg.
-`query`                   | string or object | Query that caused error.
-`config.verbosityLevel`   | number           | Level of verbosity. Use one of `PGError.pgConst.PQERRORS_*`. Defaults to `PQERRORS_VERBOSE`.
-`config.showContextLevel` | number           | When to show context info in error message. Use one of `PGError.pgConst.PQSHOW_CONTEXT_*`. Defaults to `PQSHOW_CONTEXT_NEVER`.
-`config.hideQueryText`    | boolean          | If the query text should not be shown in error message. Defaults to false.
-`config.hideQueryValues`  | boolean          | If the query values should not be shown in error message. Defaults to false.
+`query`                   | string or object | *(optional)* Query that caused error.
+`config.verbosityLevel`   | number           | *(optional)* Level of verbosity. Use one of `PGError.pgConst.PQERRORS_*`. Defaults to `PQERRORS_VERBOSE`.
+`config.showContextLevel` | number           | *(optional)* When to show context info in error message. Use one of `PGError.pgConst.PQSHOW_CONTEXT_*`. Defaults to `PQSHOW_CONTEXT_NEVER`.
+`config.hideQuery`        | boolean          | *(optional)* If the full query text should not be shown in error message. Defaults to false.
+`config.hideQueryValues`  | boolean          | *(optional)* If the query values should not be shown in error message. Defaults to false.
 
+**NOTE:** Due to limitations, `PQSHOW_CONTEXT_ERROR` differs from the original functionality. It will show context for all errors instead of only fatal ones. This makes `PQSHOW_CONTEXT_ERROR` and `PQSHOW_CONTEXT_ALWAYS` equivalent.
 
 ## Fields
 
 You can access the original PG error via the `origError` key.
 
-The following keys are passed through from the original PG error. They all have a type of string. I also included releveant documentation from the PostgreSQL docs. See: https://www.postgresql.org/docs/12/protocol-error-fields.html
+The following keys are passed through from the original PG error. They all have a type of string. I also included relevant documentation from the PostgreSQL docs. See: https://www.postgresql.org/docs/12/protocol-error-fields.html
 
 key | byte | docs
 ----|------|-----
-`message`          | M | Message: the primary human-readable error message. This should be accurate but terse (typically one line). Always present.
-`severity`         | S | Severity: the field contents are `ERROR`, `FATAL`, or `PANIC` ... or a localized translation of one of these. Always present.
-`code`             | C | Code: the SQLSTATE code for the error (see [Appendix A](https://www.postgresql.org/docs/12/errcodes-appendix.html)). Not localizable. Always present.
-`detail`           | D | Detail: an optional secondary error message carrying more detail about the problem. Might run to multiple lines.
-`hint`             | H | Hint: an optional suggestion what to do about the problem. This is intended to differ from Detail in that it offers advice (potentially inappropriate) rather than hard facts. Might run to multiple lines.
-`position`         | P | Position: the field value is a decimal ASCII integer, indicating an error cursor position as an index into the original query string. The first character has index 1, and positions are measured in characters not bytes.
-`internalPosition` | p | Internal position: this is defined the same as the `P` field, but it is used when the cursor position refers to an internally generated command rather than the one submitted by the client. The `q` field will always appear when this field appears.
-`internalQuery`    | q | Internal query: the text of a failed internally-generated command. This could be, for example, a SQL query issued by a PL/pgSQL function.
-`where`            | W | Where: an indication of the context in which the error occurred. Presently this includes a call stack traceback of active procedural language functions and internally-generated queries. The trace is one entry per line, most recent first.
-`schema`           | s | Schema name: if the error was associated with a specific database object, the name of the schema containing that object, if any.
-`table`            | t | Table name: if the error was associated with a specific table, the name of the table. (Refer to the schema name field for the name of the table's schema.)
-`column`           | c | Column name: if the error was associated with a specific table column, the name of the column. (Refer to the schema and table name fields to identify the table.)
-`dataType`         | d | Data type name: if the error was associated with a specific data type, the name of the data type. (Refer to the schema name field for the name of the data type's schema.)
-`constraint`       | n | Constraint name: if the error was associated with a specific constraint, the name of the constraint. Refer to fields listed above for the associated table or domain. (For this purpose, indexes are treated as constraints, even if they weren't created with constraint syntax.)
-`file`             | F | File: the file name of the source-code location where the error was reported.
-`line`             | L | Line: the line number of the source-code location where the error was reported.
-`routine`          | R | Routine: the name of the source-code routine reporting the error.
+`message`              | M | Message: the primary human-readable error message. This should be accurate but terse (typically one line). Always present.
+`severity`             | S | Severity: the field contents are `ERROR`, `FATAL`, or `PANIC` ... or a localized translation of one of these. Always present.
+`code`                 | C | Code: the SQLSTATE code for the error (see [Appendix A](https://www.postgresql.org/docs/12/errcodes-appendix.html)). Not localizable. Always present.
+`detail`               | D | Detail: an optional secondary error message carrying more detail about the problem. Might run to multiple lines.
+`hint`                 | H | Hint: an optional suggestion what to do about the problem. This is intended to differ from Detail in that it offers advice (potentially inappropriate) rather than hard facts. Might run to multiple lines.
+`position`             | P | Position: the field value is a decimal ASCII integer, indicating an error cursor position as an index into the original query string. The first character has index 1, and positions are measured in characters not bytes.
+`internalPosition`     | p | Internal position: this is defined the same as the `P` field, but it is used when the cursor position refers to an internally generated command rather than the one submitted by the client. The `q` field will always appear when this field appears.
+`internalQuery`        | q | Internal query: the text of a failed internally-generated command. This could be, for example, a SQL query issued by a PL/pgSQL function.
+`where`                | W | Where: an indication of the context in which the error occurred. Presently this includes a call stack traceback of active procedural language functions and internally-generated queries. The trace is one entry per line, most recent first.
+`schema`               | s | Schema name: if the error was associated with a specific database object, the name of the schema containing that object, if any.
+`table`                | t | Table name: if the error was associated with a specific table, the name of the table. (Refer to the schema name field for the name of the table's schema.)
+`column`               | c | Column name: if the error was associated with a specific table column, the name of the column. (Refer to the schema and table name fields to identify the table.)
+`dataType`             | d | Data type name: if the error was associated with a specific data type, the name of the data type. (Refer to the schema name field for the name of the data type's schema.)
+`constraint`           | n | Constraint name: if the error was associated with a specific constraint, the name of the constraint. Refer to fields listed above for the associated table or domain. (For this purpose, indexes are treated as constraints, even if they weren't created with constraint syntax.)
+`file`                 | F | File: the file name of the source-code location where the error was reported.
+`line`                 | L | Line: the line number of the source-code location where the error was reported.
+`routine`              | R | Routine: the name of the source-code routine reporting the error.
+
+
+The following fields are currently **not** supported due to lack of support by `pg`:
+
+byte | docs
+-----|-----
+V | Severity: the field contents are `ERROR`, `FATAL`, or `PANIC` ... This is identical to the `S` field except that the contents are never localized. This is present only in messages generated by PostgreSQL versions 9.6 and later.
 
 
 **Note:** The fields for schema name, table name, column name, data type name, and constraint name are supplied only for a limited number of error types; see [Appendix A](https://www.postgresql.org/docs/12/errcodes-appendix.html). Frontends should not assume that the presence of any of these fields guarantees the presence of another field. Core error sources observe the interrelationships noted above, but user-defined functions may use these fields in other ways. In the same vein, clients should not assume that these fields denote contemporary objects in the current database.
@@ -203,7 +211,6 @@ CONSTRAINT NAME:  mytable_mycol_check
 LOCATION:  ExecConstraints, execMain.c:1762
 QUERY: ...
 ```
-
 
 
 ## Project Structure
