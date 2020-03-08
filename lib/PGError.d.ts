@@ -5,7 +5,7 @@ declare class PGError extends Error {
       text?  : string | null;
       values?: any[] | null;
     },
-    config?: {
+    options?: {
       verbosityLevel?  : number;
       showContextLevel?: number;
       hideQuery?       : boolean;
