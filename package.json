@@ -1,6 +1,6 @@
 {
   "name": "@yo1dog/pg-error",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "description": "PG Error",
   "main": "lib/PGError.js",
   "types": "lib/PGError.d.ts",
@@ -22,7 +22,8 @@
   },
   "homepage": "https://github.com/yo1dog/node-pg-error#readme",
   "dependencies": {
-    "@yo1dog/extendable-error": "^1.0.2"
+    "@yo1dog/extendable-error": "^1.0.4",
+    "wcwidth.js": "^1.0.0"
   },
   "devDependencies": {
     "@types/node": "^13.5.0"
