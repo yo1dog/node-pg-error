@@ -4,6 +4,28 @@ Better PostgreSQL errors from `pg`.
 
 This library creates PostgreSQL errors with messages that emulate the `psql` client. In fact, the code for generating the error messages is translated directly from the [psql C source code](https://github.com/postgres/postgres/blob/c9d29775195922136c09cc980bb1b7091bf3d859/src/interfaces/libpq/fe-protocol3.c#L985) with minimal modifications.
 
+`PGError` wraps errors returned by `pg`. It passes through keys from the original error which provide access to the [PostgreSQL error message fields](https://www.postgresql.org/docs/12/protocol-error-fields.html) for identifiable errors. This includes error code, table name, column name, constraint name, detail message, hint, etc.
+
+You can also include the query that caused the error. This allows `PGError` to capture and display information related to the query. For example, the offending portion of the query can be included in the error message along with the line and character location.
+
+Original:
+```
+Error: syntax error at or near "1234"
+```
+PGError:
+```
+PGError: ERROR:  42601:  syntax error at or near "1234"
+LINE 3: CHAR 11:
+LEFT JOIN 1234 ON fu = 'bar'
+          ^
+QUERY:  {
+  text: 'SELECT a, b\n' +
+    'FROM fubar\n' +
+    "LEFT JOIN 1234 ON fu = 'bar'\n' +
+    "WHERE a = $1;"
+  values: [ 'asdf' ]
+}
+```
 
 ## Quick Start
 
@@ -46,16 +68,18 @@ QUERY: {
 
 # Docs
 
-## `new PGError(err, [query, [config]])`
+## Usage
 
- param                    | type             | description
---------------------------|------------------|-------------
-`err`                     | Error            | Error from pg.
-`query`                   | string or object | *(optional)* Query that caused error.
-`config.verbosityLevel`   | number           | *(optional)* Level of verbosity. Use one of `PGError.pgConst.PQERRORS_*`. Defaults to `PQERRORS_VERBOSE`.
-`config.showContextLevel` | number           | *(optional)* When to show context info in error message. Use one of `PGError.pgConst.PQSHOW_CONTEXT_*`. Defaults to `PQSHOW_CONTEXT_NEVER`.
-`config.hideQuery`        | boolean          | *(optional)* If the full query text should not be shown in error message. Defaults to false.
-`config.hideQueryValues`  | boolean          | *(optional)* If the query values should not be shown in error message. Defaults to false.
+`new PGError(err, [query, [options]])`
+
+ param                     | type             | description
+---------------------------|------------------|-------------
+`err`                      | Error            | Error from pg.
+`query`                    | string or object | *(optional)* Query that caused error.
+`options.verbosityLevel`   | number           | *(optional)* Level of verbosity. Use one of `PGError.pgConst.PQERRORS_*`. Defaults to `PQERRORS_VERBOSE`.
+`options.showContextLevel` | number           | *(optional)* When to show context info in error message. Use one of `PGError.pgConst.PQSHOW_CONTEXT_*`. Defaults to `PQSHOW_CONTEXT_NEVER`.
+`options.hideQuery`        | boolean          | *(optional)* If the full query text should not be shown in error message. Defaults to false.
+`options.hideQueryValues`  | boolean          | *(optional)* If the query values should not be shown in error message. Defaults to false.
 
 **NOTE:** Due to limitations, `PQSHOW_CONTEXT_ERROR` differs from the original functionality. It will show context for all errors instead of only fatal ones. This makes `PQSHOW_CONTEXT_ERROR` and `PQSHOW_CONTEXT_ALWAYS` equivalent.
 
@@ -211,6 +235,14 @@ CONSTRAINT NAME:  mytable_mycol_check
 LOCATION:  ExecConstraints, execMain.c:1762
 QUERY: ...
 ```
+
+
+## Caveats
+
+- Not all PostgreSQL error message fields are available because they are not supported by `pg`. See the fields docs above.
+- `PQSHOW_CONTEXT_ERROR` and `PQSHOW_CONTEXT_ALWAYS` are equivalent. See usage docs above.
+- The line position may not exactly match your editor/terminal if the query contains abnormal line breaks. psql considers `\r`, `\n`, and `\r\n` as line breaks.
+- The character position may not exactly match your editor/terminal if the query contains certain "wide" characters or grapheme clusters. This is due to lack of standardization around handling the display width of these characters in fixed width environments and grapheme clusters are counted. For example, the [Family: Man, Woman, Boy, Boy emoji](https://emojipedia.org/family-man-woman-boy-boy/) 👨‍👩‍👦‍👦 may be the same width as 1 character, 2 characters, 2.5, etc. The character after may be considered to be at column/char 2, 3, 8, etc. psql and PGError use an implementation of [`wcwidth`](http://man7.org/linux/man-pages/man3/wcwidth.3.html) and do not support grapheme clustering.
 
 
 ## Project Structure
