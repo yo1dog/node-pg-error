@@ -1,3 +1,10 @@
+## Deprecated
+
+This package has been deprecated. Please use [@yo1dog/psql-error](https://www.npmjs.com/package/@yo1dog/psql-error) instead.
+
+-----
+
+
 # pg-error
 
 PG Error
